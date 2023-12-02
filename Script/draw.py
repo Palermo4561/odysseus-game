@@ -3,47 +3,61 @@ from button import *
 import dictionaries
 from functions import *
 from boat import Boat
+from globals import *
+from button import Button
 
-def game_screen(buttons:list[Button], scene:int) -> None:
+def game_screen(buttons:list[Button], scene:int, description) -> None:
     """Draws the main game screen
 
 Parameters:
     buttons: list of the buttons to be rendered to the screen
     scene: scene number, indicated by an integer"""
-    
+
+    pg.display.get_surface().fill((0, 0, 0))
+
     title_bar(scene)
-    side_screen("super awesome\ndesctiption")
+    side_screen(description, scene)
     main_screen(scene)
     for button in buttons:
         button.draw()
 
 
 
-def map_screen(boat:Boat, img:pg.Surface) -> None:
+def map_screen(boat:Boat, img:pg.Surface, scene:int, waypoint_cords) -> None:
     """Draws the map screen of Achilelus's journey
 
 Parameters: 
     boat: player character Boat object
-    img: map image to draw"""
+    img: map image to draw
+    scene: scene number, indicated by an integer"""
+
+    win = pg.display.get_surface()
+
+    win.fill(pg.Color(0, 0, 0))
+
+    win.blit(img, (0, 0))
+
+    screenX, screenY = pg.display.get_window_size()
+
+    rx = waypoint_cords[0] - screenX / 320
+    ry = waypoint_cords[1] - screenY / 180
+
+    thick_aa_circle(waypoint_cords, WAYPOINT_RADIUS, "#0C6C19", 2)
+    draw_circle_alpha(pg.Color(0, 164, 69, 50), waypoint_cords, WAYPOINT_RADIUS)
+    pg.draw.rect(win, 'red', pg.Rect(rx, ry, screenX / 160, screenY / 90))
+
+    win.blit(boat.image, boat.rect)
 
 
-    pg.display.get_surface().fill(pg.Color(0, 0, 0))
-    
 
-    pg.display.get_surface().blit(img, (0, 0))
-    pg.display.get_surface().blit(boat.image, boat.rect)
+def opening_screen() -> None:
+    """Draws the opening screen of the game"""
 
+    screenX, screenY = pg.display.get_window_size()
 
-
-def opening_screen(start_button:Button) -> None:
-    """Draws the opening screen of the game
-
-Parameters:
-    start_button: button to start the program"""
-
-    pg.display.get_surface().fill((0, 0, 0))
-    start_button.draw()
-
+    pg.display.get_surface().fill("#366797")
+    text = pg.font.Font(None, 80).render("Click to begin", True, 'white')
+    pg.display.get_surface().blit(text, text.get_rect(center=(screenX//2, screenY//2)))
 
 
 def title_bar(scene:int) -> None:
@@ -64,7 +78,7 @@ Parameters:
 
 
 
-def side_screen(description:str) -> None:
+def side_screen(description:str, scene) -> None:
     """Draws the side screen with the description
     
 Parameters:
@@ -72,12 +86,12 @@ Parameters:
 
     win = pg.display.get_surface()
 
-    x, y = pg.display.get_window_size()
-    rect = pg.Rect(0, y//5 - 2, x // 6, 4 * y // 5)
-    pg.draw.rect(win, 'orange', rect)
-    pg.draw.rect(win, 'black', rect, 3)
+    screenX, screenY = pg.display.get_window_size()
+    rect = pg.Rect(0, screenY//5 - 2, screenX // 6, 4 * screenY // 5)
 
-    multiline_text(description, 40, topleft=tuple(map(lambda z : z + x//200, rect.topleft)))
+    win.blit(pixel_scale(pg.image.load(f"Assets/General/Side.png")), (0, screenY//5))
+
+    multiline_text(str(description), screenX // 42, screenX // 6, topleft=tuple(map(lambda z : z + screenX//100, rect.topleft)))
 
 
 
@@ -87,42 +101,89 @@ def main_screen(scene) -> None:
 Parameters: 
     scene: scene number, indicated by an integer"""
 
-    bg = pg.image.load(f"./Assets/Scene{scene}/background.png").convert_alpha()
+    #bg = pg.image.load(f"./Assets/Scene{scene}/background.png").convert_alpha()
+    bg = pg.image.load(f"./Assets/Scene1/Background.png").convert_alpha()
     x, y = pg.display.get_window_size()
 
     bg = pg.transform.scale(bg, (2*x/3, 4*y/5))
 
-    pg.display.get_surface().blit(bg, (x // 6, y // 5))
+    pg.display.get_surface().blit(bg, (x / 6, y / 5))
 
 
+def fade_out(clock:pg.time.Clock, next_screen_draw, *args):
+
+    alpha = 0
+
+    while True:
+
+        clock.tick(FPS)
+
+        next_screen_draw(*args)
+        
+        s = pg.Surface(pg.display.get_window_size())
+        s.set_alpha(int(255 * alpha / (FADE_SECS * FPS)))
+        s.fill((0, 0, 0))
+        pg.display.get_surface().blit(s, (0, 0))
+
+        alpha += 1
+
+        pg.display.update()
+
+        if alpha > FADE_SECS * FPS:
+            pg.display.get_surface().fill((0, 0, 0))
+            break
+
+def fade_in(clock, next_screen_draw, *args):
 
 
+    alpha = FADE_SECS * FPS / 4
+
+    while True:
 
 
-# these are not used yet, to be implemented 
+        clock.tick(FPS)
 
-def full_screen(button:Other_Button) -> None:
-    """Draws the full screen button
-    
-Parameters:
-    button: full screen Button object"""
-    
-    pg.draw.rect(pg.display.get_surface(), 'pink', pg.Rect(*button.center, *button.dim))
+        next_screen_draw(*args)
+        
+        s = pg.Surface(pg.display.get_window_size())
+        s.set_alpha(int(255 * alpha / (FADE_SECS * FPS / 4)))
+        s.fill((0, 0, 0))
+        pg.display.get_surface().blit(s, (0, 0))
+                
+        alpha -= 1
 
+        pg.display.update()
 
-def mute(button:Other_Button) -> None:
-    """Draws the mute button
-    
-Parameters:
-    button: full screen Button object"""
+        if alpha <= 0:
+            break
 
-    pass 
+def map_guide_text():
 
+    screenX, screenY = pg.display.get_window_size()
 
+    text = pg.font.Font(None, 50).render("Use arrow keys or WASD to move to the next waypoint", True, 'black')
 
+    rect = pg.Rect(screenX//8, screenY//48, 3*screenX//4, 5*screenY//72)
+    pg.draw.rect(pg.display.get_surface(), '#6D715A', rect, border_radius=3)
+    pg.draw.rect(pg.display.get_surface(), '#000000', rect, 2, 3)
 
-# this is horrible but idk what else to do to combat circular import 
-special_buttons = {
-    'full_screen' : full_screen,
-    'mute' : mute
-}
+    pg.display.get_surface().blit(text, text.get_rect(center=(screenX//2, screenY//18)))
+
+def crew_counter(scene):
+
+    num = str(dictionaries.crew_count[scene-1])
+
+    screenX, screenY = pg.display.get_window_size()
+    text = pg.font.Font(None, screenX//30).render(f"Crew Count: {num}", True, 'black')
+
+    text_rect = text.get_rect(center=((7*screenX)//8, screenY // 18))
+
+    border_extra = (screenX//120, screenY//100)
+
+    border_rect = pg.Rect(text_rect.left-border_extra[0], text_rect.top-border_extra[1],\
+                          text_rect.width+2*border_extra[0], text_rect.height+2*border_extra[1])
+
+    pg.draw.rect(pg.display.get_surface(), '#6D715A', border_rect, border_radius=3)
+    pg.draw.rect(pg.display.get_surface(), '#000000', border_rect, 2, 3)
+
+    pg.display.get_surface().blit(text, text_rect)

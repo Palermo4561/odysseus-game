@@ -5,9 +5,10 @@ Literature Humanities
 Odessey Game 
 
 TODO:
-dynamically calculate the font size
-add location bubbles 
-make the game lol
+intro scene 
+make the crew counter accurate 
+end scene 
+create art for each button variation
 
 """
 
@@ -21,8 +22,6 @@ def main() -> None:
 
     pg.init()
 
-    clock = pg.time.Clock()
-
     running = True
 
     pg.display.set_mode((1280,720))
@@ -34,11 +33,11 @@ def main() -> None:
 
         scene = 1
 
-        run.opening(clock)
+        run.opening()
 
         while True:
-            run.display_map(scene, clock)
-            run.main_game(scene, clock)
+            run.display_map(scene)
+            run.main_game(scene)
             
             scene += 1
 

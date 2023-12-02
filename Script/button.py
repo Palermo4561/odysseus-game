@@ -1,67 +1,40 @@
 import pygame as pg
-import draw
+from functions import *
+import csv
 
 class Button():
 
-    def __init__(self, label:str, pos:int, color:pg.Color) -> None:
+    def __init__(self, label:str, pos:int, scene:int) -> None:
         """Instanciates the Button class
 
 Parameters: 
     label: label for the button, can be a kwarg for special buttons
     pos: numerical position of the button
-    color: color of the button"""
+    color: color of the button
+    scene: scene number, indicated by an integer"""
         
         self.label = label
         self.pos = pos
-        self.color = color
+        self.scene = scene
         self.win = pg.display.get_surface()
+        self.screenX, self.screenY = pg.display.get_window_size()
+
+        self.image = self.__get_image()
+        self.topleft = self.__get_topleft()
+        self.collision_rect = self.__get_rect()
+        
+        self.outcome_image = self.__get_outcome_image()
+        self.outcome_text = self.__get_outcome_text()
+        self.outcome_text_color = self.__get_outcome_text_color()
 
 
-    def get_font_size(self) -> None:
-        """Will eventually computer the correct font sized based on the window size"""
-        return 50
-
-
-    def __repr__(self) -> str:
-        """Returns the specificities of the Button object"""
-
-        return f"Rect: {self.rect}\nText: {self.label}"
-
-
-    def draw(self) -> None:
-        """Draws the button"""
-
-        pg.draw.rect(self.win, self.color, self.rect)
-        pg.draw.rect(self.win, pg.Color(0, 0, 0), self.rect, 2)
-        self.win.blit(self.text, self.text_rect)
-    
-
-    def mouse_collides(self) -> int:
-        """Checks to see if the mouse is colliding with the button 
-Returns the position if it is, otherwise returns 0"""
-
-        if self.rect.collidepoint(pg.mouse.get_pos()):
-            return self.pos
-        return 0
-
-
-
-class Option_Button(Button):
-
-    def __init__(self, label:str, pos:int, color:pg.Color) -> None:
-        """Instanciates the Option_Button class
-
-Parameters: 
-    label: label for the button, can be a kwarg for special buttons
-    pos: numerical position of the button
-    color: color of the button"""
-
-        self.screen_size = pg.display.get_window_size()
-
-        super().__init__(label, pos, color)
-        self.text = pg.font.Font(None, self.get_font_size()).render(self.label, True, 'black')
-        self.rect = self.__get_rect()
-        self.text_rect = self.text.get_rect(center=self.rect.center)
+    def __get_image(self) -> pg.Surface:
+        """Renders the button's image
+        
+Return: 
+    pg.Surface: the surface rendered for the button's main image"""
+        
+        return pixel_scale(pg.image.load(f"Assets/General/Button{self.pos}.png"))
 
 
     def __get_rect(self) -> pg.Rect:
@@ -70,56 +43,77 @@ Parameters:
 Return: 
     pg.Rect: rectangle object for the Button"""
 
-        sx, sy = self.screen_size
-        x = sx / 6
-        y = sy / 10
-
-        rx = sx / 6
-        ry = (sy / 5) + (2 * y * (self.pos - 1)) - 2
-
-        return pg.Rect(5 * rx, ry, rx, y*2)
+        return pg.Rect(5 * self.screenX / 6, self.topleft[1], self.screenX / 6, self.screenY / 5)
 
 
-
-class Other_Button(Button):
-
-    def __init__(self, label: str, pos: int, color: pg.Color, \
-                 center: tuple, dimensions: tuple, *, action = None) -> None:
+    def __get_topleft(self) -> tuple:
+        """Calculates the topleft value of the button
         
-        """Instanciates the Special_Button class
+Return: 
+    tuple: cordinate of the topleft of the button"""
 
-Parameters: 
-    label: label for the button, can be a kwarg for special buttons
-    pos: numerical position of the button
-    color: color of the button
-    center: center cordinate for the button 
-    dimensions: dimensions of the button
-    action: optional parameter for buttons that have a special functionality"""
+        return (5 * self.screenX / 6, self.pos * self.screenY / 5)
 
-        super().__init__(label, pos, color)
 
-        self.c = center
-        self.text = pg.font.Font(None, self.get_font_size()).render(self.label, True, 'black')
-        self.text_rect = self.text.get_rect(center=self.c)
-        self.dim = dimensions
-        self.rect = pg.Rect(center[0] - dimensions[0]//2, \
-                            center[1] - dimensions[1]//2, \
-                            dimensions[0], dimensions[1])
-        if action:
-            self.action = action
+    def __get_outcome_image(self) -> pg.Surface:
+        """Renders the button's outcome image
+        
+Return: 
+    pg.Surface: the surface rendered for the button's outcome image"""
+        
+        return pixel_scale(pg.image.load(f"Assets/Scene{self.scene}/Choice{self.pos}.png"), fullscreen=True)
+
+
+    def __get_outcome_text(self) -> str:
+        """Loads the text associated with the button's outcome
+        
+Return: 
+    str: the text associated with the button's outcome"""
+        
+        with open("Assets/General/outcomes.csv") as file:
+            return tuple(csv.reader(file))[self.scene-1][self.pos-1]
+        
+    
+    def __get_outcome_text_color(self) -> str:
+        """Determines if the text color should be black or white based on the image
+        
+Return: 
+    str: the string for the pygame color of the text"""
+        
+        if all(self.outcome_image.get_at((0, 0))) <= 50:
+            return 'white'
+        return 'black'
+
+
+    def __repr__(self) -> str:
+        """Returns the specificities of the Button object
+        
+Return: 
+    str: string of the rect cords and the label"""
+
+        return f"Rect: {self.collision_rect}\nText: {self.label}"
+    
+
+    def mouse_collides(self) -> int:
+        """Checks to see if the mouse is colliding with the button 
+        
+Returns the position if it is, otherwise returns 0"""
+
+        if self.collision_rect.collidepoint(pg.mouse.get_pos()):
+            return self.pos
+        return 0
 
 
     def draw(self) -> None:
-        """Draws the button, allowing for kwarg label to effect what is drawn"""
+        """Draws the button"""
+
+        self.win.blit(self.image, self.topleft)
+        multiline_text(self.label, self.win.get_size()[0]//30, self.win.get_size()[0]//6, center=self.collision_rect.center)
 
 
-        if self.label not in draw.special_buttons:
-            super().draw()
-        else:
-            draw.special_buttons[self.label](self)
-
-
-    def __call__(self) -> None:
-        """Calls the function of the Button (if specified)"""
-
-        self.action()
+    def play_outcome(self) -> None:
+        """Blits the outcome image and text of the button"""
+        
+        self.win.blit(self.outcome_image, (0, 0))
+        multiline_text(self.outcome_text, self.screenX//16, color=self.outcome_text_color, center=(self.screenX//2, self.screenY//8))
+        #multiline_text(self.outcome_text, self.screenX//16)

@@ -1,22 +1,25 @@
 import pygame as pg
-from dictionaries import boat_positions
 from globals import *
 from functions import *
+from math import dist
 
 class Boat():
-    def __init__(self, scene, map_surf) -> None:
+    def __init__(self, scene:int, map_surf:pg.Surface) -> None:
+        """Instantiates an object of the Boat class
+Parameters: 
+    scene: scene number, indicated by an integer
+    map_surf: surface (image) of the map to check collisions with the boat movement 
+    """
 
         self.screenX, self.screenY = pg.display.get_window_size()
         
         self.map_surf = map_surf
 
         self.image = pixel_scale(pg.image.load('./Assets/MapScene/boat.png').convert_alpha(), scale=0.5)
-        self.rect = self.image.get_rect(center=boat_positions[scene])
+        self.rect = self.image.get_rect(midbottom=calculate_boat_coords(scene))
 
     def move(self) -> None:
-        """Moves the Boat object from pressed keys 
-
-Parameters: None"""
+        """Moves the Boat object from pressed keys"""
 
         keys = pg.key.get_pressed()
 
@@ -53,7 +56,7 @@ Return:
 
 
 
-    def __no_collide(self, movementX, movementY) -> tuple:
+    def __no_collide(self, movementX:int, movementY:int) -> tuple:
         """Checks to see if the bottom of the boat collides with the land
         
 Parameters:
@@ -80,3 +83,14 @@ Return:
             return 0, 0
         
         return newX, newY
+    
+
+    def collide_waypoint(self, waypoint_cords:tuple) -> bool:
+        """Checks if the boat is close enough with the waypoint to interact
+
+Parameters: 
+    waypoint_cords: a tuple with the adjusted cords of the location of the waypoint
+    
+Returns:
+    bool: returns whether or not the boat is within the radius of the waypoint"""
+        return dist(waypoint_cords, self.rect.center) <= WAYPOINT_RADIUS

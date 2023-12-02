@@ -1,62 +1,53 @@
 import pygame as pg
-import random
 import draw 
 from globals import *
-from button import *
+from button import Button
 from functions import *
 from dictionaries import *
-import button_details as bd
-import functions
 from boat import Boat
+import csv
 
 
-def opening(clock:pg.time.Clock) -> None:
-    """Runs the opening scene of the same
-
-Parameters:
-    clock: clock object for keeping consistent time"""
+def opening() -> None:
+    """Runs the opening scene of the same"""
 
     running = True
+    clock = pg.time.Clock()
     
-    x, y = pg.display.get_window_size()
-
-    start_button = Other_Button('Start', 1, 'red', (x//2, 3*y//4), (150, 100))
-    fs_button = Other_Button('full_screen', 1, 'red', (300, 300), (100, 100))
-
     while running:
     
         clock.tick(FPS)
 
-        draw.opening_screen(start_button)
+        draw.opening_screen()
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 end()
             if event.type == pg.KEYUP:
-                if event.key == pg.K_ESCAPE:
+                if event.key in (pg.K_ESCAPE, pg.K_q):
                     end()
             if event.type == pg.MOUSEBUTTONUP:
-                if start_button.mouse_collides():
-                    running = False
+                running = False
         
         pg.display.update()
 
 
-def display_map(scene:int, clock:pg.time.Clock) -> None:
+def display_map(scene:int) -> None:
     """Runs the map of Achilleus
     
 Parameters: 
-    scene: scene number, indicated by an integer
-    clock: clock object for keeping consistent time"""
+    scene: scene number, indicated by an integer"""
 
     running = True
-
-    screenX, screenY = pg.display.get_window_size()
+    clock = pg.time.Clock()
     
     img = pixel_scale(pg.image.load('./Assets/MapScene/map.png').convert_alpha(), fullscreen=True)
-    img = pg.transform.scale(img, (screenX, screenY))
 
     boat = Boat(scene, img)
+
+    waypoint_cords = calculate_waypoint_coords(scene)
+
+    show_guide_text = True
 
 
     while running:
@@ -66,47 +57,70 @@ Parameters:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 end()
-            if event.type == pg.MOUSEBUTTONUP:
-                running = False
             if event.type == pg.KEYUP:
-                if event.key == pg.K_ESCAPE:
+                if event.key in (pg.K_ESCAPE, pg.K_q):
                     end()
+                if event.key == pg.K_n:
+                    running = False
+            if event.type == pg.KEYDOWN:
+                show_guide_text = False
 
         boat.move()
 
-        draw.map_screen(boat, img)
+        draw.map_screen(boat, img, scene, waypoint_cords)
+
+        if show_guide_text: 
+            draw.map_guide_text()
+        else:
+            draw.crew_counter(scene)
+
+
+        if boat.collide_waypoint(waypoint_cords):
+            draw.fade_out(clock, draw.map_screen, boat, img, scene, waypoint_cords)
+            running = False
+
         pg.display.update()
 
 
-def main_game(scene:int, clock:pg.time.Clock) -> None:
+def main_game(scene:int) -> None:
     """Runs the main game
     
 Parameters: 
-    scene: scene number, indicated by an integer
-    clock: clock object for keeping consistent time"""
+    scene: scene number, indicated by an integer"""
 
     running = True
+    clock = pg.time.Clock()
 
+
+    with open("Assets/General/buttons.csv") as file:
+        button_values = tuple(csv.reader(file))[scene-1]
+    with open("Assets/General/descriptions.txt") as file:
+        description = str(file.readlines()[scene-1])
 
     buttons = []
     for n in range(1, 5):
-        buttons.append(Option_Button(bd.names[scene][n-1], n, pg.Color(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))))
+        buttons.append(Button(button_values[n-1], n, scene))
+
+    
+    draw.fade_in(clock, draw.game_screen, buttons, scene, description)
 
     while running:
 
         clock.tick(FPS)
 
+        draw.game_screen(buttons, scene, description)
+
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 end()
             if event.type == pg.MOUSEBUTTONUP:
-                if check_button_collisions(buttons) == 2:
-                    running = False
+                if (b := check_button_collisions(buttons)):
+                    play_option(buttons[b-1])
+                    if b == int(button_values[4]):
+                        running = False
             if event.type == pg.KEYUP:
-                if event.key == pg.K_ESCAPE:
+                if event.key in (pg.K_ESCAPE, pg.K_q):
                     end()
-
-        draw.game_screen(buttons, scene)
 
         pg.display.update()
         
@@ -124,7 +138,7 @@ def ending() -> None:
             if event.type == pg.MOUSEBUTTONUP:
                 running = False
             if event.type == pg.KEYUP:
-                if event.key == pg.K_ESCAPE:
+                if event.key in (pg.K_ESCAPE, pg.K_q):
                     end()
 
         pg.display.get_surface().fill((44, 88, 120))
@@ -133,6 +147,25 @@ def ending() -> None:
         click anywhere to play again
         press q or esc to quit"""
 
-        functions.multiline_text(end_text, 100, center=tuple(map(lambda z : z //2, pg.display.get_window_size())))
+        multiline_text(end_text, 100, center=tuple(map(lambda z : z //2, pg.display.get_window_size())))
+
+        pg.display.update()
+
+
+def play_option(button:Button):
+
+    running = True
+    
+    while running:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                end()
+            if event.type == pg.MOUSEBUTTONUP:
+                running = False
+            if event.type == pg.KEYUP:
+                if event.key in (pg.K_ESCAPE, pg.K_q):
+                    end()
+
+        button.play_outcome()
 
         pg.display.update()
