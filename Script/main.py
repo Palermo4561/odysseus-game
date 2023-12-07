@@ -29,12 +29,12 @@ def main() -> None:
 
 
     # for testing sanity 
-    #pg.mixer.music.set_volume(0)
+    pg.mixer.music.set_volume(0)
 
 
     while running:
 
-        scene = 10
+        scene = 1
 
         run.opening()
         run.tutorial()
