@@ -5,10 +5,8 @@ Literature Humanities
 Odessey Game 
 
 TODO:
-intro scene 
-make the crew counter accurate 
-end scene 
-create art for each button variation
+
+troubleshoot and play test 
 
 """
 
@@ -27,13 +25,19 @@ def main() -> None:
     pg.display.set_mode((1280,720))
 
     # for testing 
-    #pg.display.set_mode(flags=pg.FULLSCREEN)
+    pg.display.set_mode(flags=pg.FULLSCREEN)
+
+
+    # for testing sanity 
+    #pg.mixer.music.set_volume(0)
+
 
     while running:
 
-        scene = 1
+        scene = 10
 
         run.opening()
+        run.tutorial()
 
         while True:
             run.display_map(scene)
@@ -53,7 +57,21 @@ if __name__ == "__main__":
 """
 Credits: 
 
-
 Font: https://www.1001freefonts.com/greek-freak.font
+Trumpet: https://pixabay.com/sound-effects/success-fanfare-trumpets-6185/"
+Click: https://pixabay.com/sound-effects/hitting-wood-6791/ 
+
+Opening Music: 
+Viking Intro (Loop) by Alexander Nakarada (CreatorChords) | https://creatorchords.com
+Music promoted by https://www.free-stock-music.com
+Creative Commons / Attribution 4.0 International (CC BY 4.0)
+https://creativecommons.org/licenses/by/4.0/
+
+Gameplay Music:
+War Shout (Loop Ready) by Alexander Nakarada (CreatorChords) | https://creatorchords.com
+Music promoted by https://www.free-stock-music.com
+Creative Commons / Attribution 4.0 International (CC BY 4.0)
+https://creativecommons.org/licenses/by/4.0/
+
 
 """

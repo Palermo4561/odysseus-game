@@ -1,17 +1,17 @@
 
 scenes = {
-    1 : "Ismaros - Land of the Cicones",
-    2 : "The Island of the Lotus Eaters",
-    3 : "Polyphemus",
-    4 : "Bag of Winds",
-    5 : "Land of Cannibals",
-    6 : "Pigs",
+    1 : "Ismarus",
+    2 : "Land of the Lotus-Eaters",
+    3 : "Polyphemus's Cave",
+    4 : "The Floating Island",
+    5 : "Laestrygonia",
+    6 : "Aeaea",
     7 : "Underworld",
     8 : "Sirens",
     9 : "Scylla and Charybdis",
-    10 : "Helios",
+    10 : "Thrinacia",
     11 : "Ogygia",
-    12 : "Scheria",
+    12 : "Phaeacia",
     13 : "Ithaca"
 }
 
@@ -49,3 +49,11 @@ spawn_locations = {
 
 # make this accurate 
 crew_count = (684, 612, 612, 536, 536, 46, 45, 45, 45, 39, 1, 1, 1)
+
+outcome_text_colors = {
+    1 : ('#2b2208', '#010313', '#2b2208', '#ffffff'),
+    2 : ('#3e3f3f', '#3e3f3f', '#0f253d', '#0f253d'),
+    3 : ('#ffffff', '#ffffff', '#ffffff', '#ffffff'),
+    4 : ('#000000', '#000000', '#000000', '#000000')
+
+}

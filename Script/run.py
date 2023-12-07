@@ -13,6 +13,8 @@ def opening() -> None:
 
     running = True
     clock = pg.time.Clock()
+    pg.mixer.music.load("./Assets/General/opening_music.mp3")
+    pg.mixer.music.play(-1)
     
     while running:
     
@@ -27,10 +29,45 @@ def opening() -> None:
                 if event.key in (pg.K_ESCAPE, pg.K_q):
                     end()
             if event.type == pg.MOUSEBUTTONUP:
+                pg.mixer.music.fadeout(FADE_SECS * 1000 + 500)
+                draw.fade_out(clock, draw.opening_screen)
                 running = False
+                pg.mixer.music.load("./Assets/General/gameplay_music.mp3")
+                pg.mixer.music.play(-1)
+            if event.type == pg.MOUSEBUTTONDOWN:
+                pg.mixer.Sound("./Assets/General/click.mp3").play()
+
+
         
         pg.display.update()
 
+
+def tutorial():
+    running = True
+    clock = pg.time.Clock()
+
+    draw.fade_in(clock, draw.tutorial)
+    
+    while running:
+    
+        clock.tick(FPS)
+
+        draw.tutorial()
+
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                end()
+            if event.type == pg.KEYUP:
+                if event.key in (pg.K_ESCAPE, pg.K_q):
+                    end()
+                else:
+                    running = False
+            if event.type == pg.MOUSEBUTTONUP:
+                running = False
+            if event.type == pg.MOUSEBUTTONDOWN:
+                pg.mixer.Sound("./Assets/General/click.mp3").play()
+        
+        pg.display.update()
 
 def display_map(scene:int) -> None:
     """Runs the map of Achilleus
@@ -49,6 +86,10 @@ Parameters:
 
     show_guide_text = True
 
+    ocean_sound = pg.mixer.Sound("./Assets/General/ocean.wav")
+    ocean_sound.play(-1)
+    ocean_sound.set_volume(.5)
+
 
     while running:
         
@@ -60,8 +101,7 @@ Parameters:
             if event.type == pg.KEYUP:
                 if event.key in (pg.K_ESCAPE, pg.K_q):
                     end()
-                if event.key == pg.K_n:
-                    running = False
+                    
             if event.type == pg.KEYDOWN:
                 show_guide_text = False
 
@@ -76,6 +116,7 @@ Parameters:
 
 
         if boat.collide_waypoint(waypoint_cords):
+            ocean_sound.fadeout(FADE_SECS * 1000 + 500)
             draw.fade_out(clock, draw.map_screen, boat, img, scene, waypoint_cords)
             running = False
 
@@ -101,7 +142,8 @@ Parameters:
     for n in range(1, 5):
         buttons.append(Button(button_values[n-1], n, scene))
 
-    
+    click_sound = pg.mixer.Sound("./Assets/General/click.mp3")
+
     draw.fade_in(clock, draw.game_screen, buttons, scene, description)
 
     while running:
@@ -121,14 +163,25 @@ Parameters:
             if event.type == pg.KEYUP:
                 if event.key in (pg.K_ESCAPE, pg.K_q):
                     end()
+            if event.type == pg.MOUSEBUTTONDOWN:
+                click_sound.play()
 
         pg.display.update()
         
     
 def ending() -> None:
     """Runs the end screen"""
-   
+
+
+    screenX, screenY = pg.display.get_window_size()
+    win = pg.display.get_surface()
+
     running = True
+
+    img = pixel_scale(pg.image.load('./Assets/General/endscreen.png').convert_alpha(), fullscreen=True)
+    pg.mixer.music.stop()
+
+    pg.mixer.Sound("./Assets/General/victory.mp3").play()
 
     while running:
 
@@ -141,13 +194,10 @@ def ending() -> None:
                 if event.key in (pg.K_ESCAPE, pg.K_q):
                     end()
 
-        pg.display.get_surface().fill((44, 88, 120))
+        win.blit(img, (0, 0))
 
-        end_text = """The end
-        click anywhere to play again
-        press q or esc to quit"""
-
-        multiline_text(end_text, 100, center=tuple(map(lambda z : z //2, pg.display.get_window_size())))
+        text = pg.font.Font(None, screenX//16).render('Click anywhere to play again', True, 'black')
+        win.blit(text, text.get_rect(center=(screenX//2, screenY//24)))
 
         pg.display.update()
 
@@ -162,9 +212,13 @@ def play_option(button:Button):
                 end()
             if event.type == pg.MOUSEBUTTONUP:
                 running = False
+            if event.type == pg.MOUSEBUTTONDOWN:
+                pg.mixer.Sound("./Assets/General/click.mp3").play()
             if event.type == pg.KEYUP:
                 if event.key in (pg.K_ESCAPE, pg.K_q):
                     end()
+                else:
+                    running = False
 
         button.play_outcome()
 

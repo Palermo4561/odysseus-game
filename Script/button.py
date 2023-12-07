@@ -1,6 +1,7 @@
 import pygame as pg
 from functions import *
 import csv
+from dictionaries import outcome_text_colors
 
 class Button():
 
@@ -25,7 +26,8 @@ Parameters:
         
         self.outcome_image = self.__get_outcome_image()
         self.outcome_text = self.__get_outcome_text()
-        self.outcome_text_color = self.__get_outcome_text_color()
+        #self.outcome_text_color = outcome_text_colors[scene][pos-1]
+        self.outcome_text_color = 'black'
 
 
     def __get_image(self) -> pg.Surface:

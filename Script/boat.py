@@ -18,6 +18,8 @@ Parameters:
         self.image = pixel_scale(pg.image.load('./Assets/MapScene/boat.png').convert_alpha(), scale=0.5)
         self.rect = self.image.get_rect(midbottom=calculate_boat_coords(scene))
 
+        self.horizontal_direct = 1
+
     def move(self) -> None:
         """Moves the Boat object from pressed keys"""
 
@@ -29,6 +31,10 @@ Parameters:
         if movementX or movementY:
             
             self.rect.center += pg.Vector2(self.__no_collide(movementX, movementY))
+        
+        if movementX and movementX != self.horizontal_direct:
+            self.horizontal_direct = movementX
+            self.image = pg.transform.flip(self.image, True, False)
 
 
     def __land_collide(self, movementX:int, movementY:int) -> bool:

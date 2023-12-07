@@ -1,0 +1,11 @@
+Map: 
+Use the arrow keys or WASD to move 
+Sail into the green beacons to anchor 
+Gameplay: 
+Select one of the four choices 
+Follow the book's plot to progress 
+
+Happy sailing! 
+
+Press any button to continue 
+Press Q or Esc at any time to quit 

@@ -21,6 +21,23 @@ Parameters:
     for button in buttons:
         button.draw()
 
+def tutorial():
+    
+    win = pg.display.get_surface()
+    
+    img = pixel_scale(pg.image.load('./Assets/General/tutorialscreen.png').convert_alpha(), fullscreen=True)
+    win.blit(img, (0,0))
+
+    screenX, screenY = pg.display.get_window_size()
+
+    title_text = pg.font.Font(None, screenX // 15).render('Basic Tutorial', True, 'black')
+    win.blit(title_text, title_text.get_rect(center=(screenX//2, screenY/12)))
+
+    with open('./Assets/General/tutorial.txt', 'r') as file:
+        tutorial_text = ''.join(file.readlines())
+
+    multiline_text(tutorial_text, screenX // 30, center=(screenX//2, screenY//1.7))
+
 
 
 def map_screen(boat:Boat, img:pg.Surface, scene:int, waypoint_cords) -> None:
@@ -53,11 +70,23 @@ Parameters:
 def opening_screen() -> None:
     """Draws the opening screen of the game"""
 
-    screenX, screenY = pg.display.get_window_size()
+    win = pg.display.get_surface()
 
-    pg.display.get_surface().fill("#366797")
-    text = pg.font.Font(None, 80).render("Click to begin", True, 'white')
-    pg.display.get_surface().blit(text, text.get_rect(center=(screenX//2, screenY//2)))
+    screenX, screenY = pg.display.get_window_size()
+    
+    bg = pixel_scale(pg.image.load('./Assets/General/openingscreen.png').convert_alpha(), fullscreen=True)
+    win.blit(bg, (0, 0))
+    
+    text_bg = pg.Rect(21 * screenX // 32, screenY // 30, 5 * screenX // 16, 17 * screenY // 48)
+
+    pg.draw.rect(win, '#62401D', text_bg)
+    pg.draw.rect(win, '#281706', text_bg, 6)
+
+    multiline_text("Odysseus's\nJourney", screenX//15, color='black', center=(39 * screenX//48, screenY//6))
+    sub_text = pg.font.Font(None, screenX//30).render("Click anywhere to begin", True, 'black')
+    win.blit(sub_text, sub_text.get_rect(center=(39 * screenX//48, screenY//3)))
+
+
 
 
 def title_bar(scene:int) -> None:
@@ -67,14 +96,14 @@ Parameters:
     scene: scene number, indicated by an integer"""
 
     win = pg.display.get_surface()
-    x, y = pg.display.get_window_size()
+    screenX, screenY = pg.display.get_window_size()
     title = dictionaries.scenes[scene]
-    text = pg.font.Font('./Assets/General/Greek-Freak.ttf', 80).render(title, True, 'black')
+    text = pg.font.Font('./Assets/General/Greek-Freak.ttf', screenX//14).render(title, True, 'black')
 
     img = pixel_scale(pg.image.load('./Assets/General/text_background.png').convert_alpha())
 
     win.blit(img, (0, 0))
-    win.blit(text, text.get_rect(center=(x//2, y//12 + 15)))
+    win.blit(text, text.get_rect(center=(screenX//2, screenY//10)))
 
 
 
@@ -91,7 +120,7 @@ Parameters:
 
     win.blit(pixel_scale(pg.image.load(f"Assets/General/Side.png")), (0, screenY//5))
 
-    multiline_text(str(description), screenX // 42, screenX // 6, topleft=tuple(map(lambda z : z + screenX//100, rect.topleft)))
+    multiline_text(str(description), screenX // 42, screenX // 6 - 30, topleft=tuple(map(lambda z : z + screenX//100, rect.topleft)))
 
 
 
@@ -101,8 +130,7 @@ def main_screen(scene) -> None:
 Parameters: 
     scene: scene number, indicated by an integer"""
 
-    #bg = pg.image.load(f"./Assets/Scene{scene}/background.png").convert_alpha()
-    bg = pg.image.load(f"./Assets/Scene1/Background.png").convert_alpha()
+    bg = pg.image.load(f"./Assets/Scene{scene}/background.png").convert_alpha()
     x, y = pg.display.get_window_size()
 
     bg = pg.transform.scale(bg, (2*x/3, 4*y/5))
@@ -135,12 +163,11 @@ def fade_out(clock:pg.time.Clock, next_screen_draw, *args):
 
 def fade_in(clock, next_screen_draw, *args):
 
-
     alpha = FADE_SECS * FPS / 4
 
     while True:
 
-
+        print(f'trying to fade in {alpha}')
         clock.tick(FPS)
 
         next_screen_draw(*args)
@@ -156,6 +183,7 @@ def fade_in(clock, next_screen_draw, *args):
 
         if alpha <= 0:
             break
+    print('done')
 
 def map_guide_text():
 
