@@ -1,14 +1,13 @@
 import pygame as pg
-import draw 
+import draw, csv, asyncio
 from globals import *
 from button import Button
 from functions import *
 from dictionaries import *
 from boat import Boat
-import csv
 
 
-def opening() -> None:
+async def opening() -> None:
     """Runs the opening scene of the same"""
 
     running = True
@@ -38,11 +37,12 @@ def opening() -> None:
                 pg.mixer.Sound("./Assets/General/click.mp3").play()
 
 
-        
         pg.display.update()
+        await asyncio.sleep(0)
+        
 
 
-def tutorial():
+async def tutorial():
     running = True
     clock = pg.time.Clock()
 
@@ -68,8 +68,10 @@ def tutorial():
                 pg.mixer.Sound("./Assets/General/click.mp3").play()
         
         pg.display.update()
+        await asyncio.sleep(0)
+        
 
-def display_map(scene:int) -> None:
+async def display_map(scene:int) -> None:
     """Runs the map of Achilleus
     
 Parameters: 
@@ -92,7 +94,6 @@ Parameters:
 
 
     while running:
-        
         clock.tick(FPS)
 
         for event in pg.event.get():
@@ -121,9 +122,11 @@ Parameters:
             running = False
 
         pg.display.update()
+        await asyncio.sleep(0)
+        
 
 
-def main_game(scene:int) -> None:
+async def main_game(scene:int) -> None:
     """Runs the main game
     
 Parameters: 
@@ -167,9 +170,12 @@ Parameters:
                 click_sound.play()
 
         pg.display.update()
+        await asyncio.sleep(0)
+
+        
         
     
-def ending() -> None:
+async def ending() -> None:
     """Runs the end screen"""
 
 
@@ -181,7 +187,7 @@ def ending() -> None:
     img = pixel_scale(pg.image.load('./Assets/General/endscreen.png').convert_alpha(), fullscreen=True)
     pg.mixer.music.stop()
 
-    pg.mixer.Sound("./Assets/General/victory.mp3").play()
+    pg.mixer.Sound("./Assets/General/victory.wav").play()
 
     while running:
 
@@ -200,6 +206,9 @@ def ending() -> None:
         win.blit(text, text.get_rect(center=(screenX//2, screenY//24)))
 
         pg.display.update()
+        await asyncio.sleep(0)
+
+        
 
 
 def play_option(button:Button):
@@ -223,3 +232,4 @@ def play_option(button:Button):
         button.play_outcome()
 
         pg.display.update()
+        

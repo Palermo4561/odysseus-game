@@ -6,6 +6,8 @@ from boat import Boat
 from globals import *
 from button import Button
 
+
+
 def game_screen(buttons:list[Button], scene:int, description) -> None:
     """Draws the main game screen
 
@@ -20,6 +22,8 @@ Parameters:
     main_screen(scene)
     for button in buttons:
         button.draw()
+
+
 
 def tutorial():
     
@@ -88,7 +92,6 @@ def opening_screen() -> None:
 
 
 
-
 def title_bar(scene:int) -> None:
     """Draws the title bar for the game screen
     
@@ -138,6 +141,7 @@ Parameters:
     pg.display.get_surface().blit(bg, (x / 6, y / 5))
 
 
+
 def fade_out(clock:pg.time.Clock, next_screen_draw, *args):
 
     alpha = 0
@@ -161,13 +165,14 @@ def fade_out(clock:pg.time.Clock, next_screen_draw, *args):
             pg.display.get_surface().fill((0, 0, 0))
             break
 
+
+
 def fade_in(clock, next_screen_draw, *args):
 
     alpha = FADE_SECS * FPS / 4
 
     while True:
 
-        print(f'trying to fade in {alpha}')
         clock.tick(FPS)
 
         next_screen_draw(*args)
@@ -183,7 +188,8 @@ def fade_in(clock, next_screen_draw, *args):
 
         if alpha <= 0:
             break
-    print('done')
+
+
 
 def map_guide_text():
 
@@ -196,6 +202,8 @@ def map_guide_text():
     pg.draw.rect(pg.display.get_surface(), '#000000', rect, 2, 3)
 
     pg.display.get_surface().blit(text, text.get_rect(center=(screenX//2, screenY//18)))
+
+
 
 def crew_counter(scene):
 

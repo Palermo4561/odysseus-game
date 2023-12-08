@@ -1,18 +1,19 @@
 """
 Created by Grayson Palermo 
-10/29/2023
+12/7/2023
 Literature Humanities 
 Odessey Game 
 
 TODO:
 
 troubleshoot and play test 
+add docstrings 
+format code better
 
 """
 
 import pygame as pg
 import run
-from globals import *
 
 
 def main() -> None:
@@ -22,24 +23,18 @@ def main() -> None:
 
     running = True
 
-    pg.display.set_mode((1280,720))
-
-    # for testing 
     pg.display.set_mode(flags=pg.FULLSCREEN)
-
-
-    # for testing sanity 
-    pg.mixer.music.set_volume(0)
-
+    
 
     while running:
 
+        
         scene = 1
 
         run.opening()
         run.tutorial()
 
-        while True:
+        while running:
             run.display_map(scene)
             run.main_game(scene)
             
