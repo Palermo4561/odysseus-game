@@ -3,7 +3,9 @@ from globals import *
 from functions import *
 from math import dist
 
+
 class Boat():
+
     def __init__(self, scene:int, map_surf:pg.Surface) -> None:
         """Instantiates an object of the Boat class
 Parameters: 
@@ -12,13 +14,13 @@ Parameters:
     """
 
         self.screenX, self.screenY = pg.display.get_window_size()
-        
         self.map_surf = map_surf
-
+        self.horizontal_direct = 1
+        
         self.image = pixel_scale(pg.image.load('./Assets/MapScene/boat.png').convert_alpha(), scale=0.5)
         self.rect = self.image.get_rect(midbottom=calculate_boat_coords(scene))
 
-        self.horizontal_direct = 1
+
 
     def move(self) -> None:
         """Moves the Boat object from pressed keys"""
@@ -29,12 +31,12 @@ Parameters:
         movementY = (int(keys[pg.K_s]) or int(keys[pg.K_DOWN])) - (int(keys[pg.K_w]) or int(keys[pg.K_UP]))
 
         if movementX or movementY:
-            
             self.rect.center += pg.Vector2(self.__no_collide(movementX, movementY))
         
         if movementX and movementX != self.horizontal_direct:
             self.horizontal_direct = movementX
             self.image = pg.transform.flip(self.image, True, False)
+
 
 
     def __land_collide(self, movementX:int, movementY:int) -> bool:
@@ -84,7 +86,6 @@ Return:
         elif movementY < 0 and self.rect.top <= 0:
             newY = 0
 
-
         if self.__land_collide(newX, newY):
             return 0, 0
         
@@ -99,4 +100,5 @@ Parameters:
     
 Returns:
     bool: returns whether or not the boat is within the radius of the waypoint"""
-        return dist(waypoint_cords, self.rect.center) <= WAYPOINT_RADIUS
+        
+        return dist(waypoint_cords, self.rect.center) <= int(WAYPOINT_RADIUS * self.screenX / 1280)

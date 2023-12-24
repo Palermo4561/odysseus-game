@@ -3,6 +3,7 @@ import sys
 from pygame import gfxdraw
 from dictionaries import *
 
+
 def check_button_collisions(buttons:list) -> int:
     """Checks all buttons to see if any of them are colliding with the mouse
 
@@ -19,6 +20,7 @@ Return:
     return 0
 
 
+
 def end() -> None:
     """Ends the program"""
     
@@ -26,9 +28,10 @@ def end() -> None:
     sys.exit()
 
 
+
 def multiline_text(text:str, size:int, width:int=False, /, \
                     font_type:str=None, color:str='black', **kwargs) -> None:
-    """Renders and displays multiple lines of text for PyGame
+    """IN DEVELOPMENT: Renders and displays multiple lines of text for PyGame
 
 Parameters:
     text: the text to be displayed
@@ -87,7 +90,7 @@ def pixel_scale(surface:pg.Surface, *, fullscreen:bool=False, scale:float=1) -> 
 Parameters: 
     surface: surface to be adjusted
     fullscreen: optional boolean indicating if the image is the entire screen or not
-    scane: optional float to allow the surface to not be limited to a 1:1 ratio
+    scale: optional float to allow the surface to not be limited to a 1:1 ratio
     
 Return:
     pg.Surface: new scaled surface from the origional surface"""
@@ -105,6 +108,14 @@ Return:
 
 
 def draw_circle_alpha(color:str, center:tuple, radius:int|float) -> None:
+    """Draws a circle with an alpha value
+
+Parameters:
+    color: color of the circle
+    center: center of the cirlce 
+    radius: radius of the circle"""
+
+    # kinda scuffed, but drawing translucent shapes is strange in PyGame 
     target_rect = pg.Rect(center, (0, 0)).inflate((radius * 2, radius * 2))
     shape_surf = pg.Surface(target_rect.size, pg.SRCALPHA)
     pg.draw.circle(shape_surf, color, (radius, radius), radius)
@@ -131,22 +142,34 @@ Parameters:
 
 
 def calculate_waypoint_coords(scene:int) -> tuple:
+    """Calculates and returns the scaled coords for the waypoints
+
+Parameters:
+    scene: scene number, indicated by an integer
+
+Return:
+    tuple: tuple of the scaled coords"""
 
     screenX, screenY = pg.display.get_window_size()
-
     loc = scene_locations[scene]
 
-    cx = int(loc[0] / 160 * screenX) + screenX / 320
-    cy = int(loc[1] / 90 * screenY) + screenY / 180
+    x = int(loc[0] / 160 * screenX) + screenX / 320
+    y = int(loc[1] / 90 * screenY) + screenY / 180
 
-    return cx, cy
+    return x, y
 
 
 
 def calculate_boat_coords(scene:int) -> tuple:
+    """Calculates and returns the scaled coords for the boat start location
+
+Parameters:
+    scene: scene number, indicated by an integer
+
+Return:
+    tuple: tuple of the scaled coords"""
 
     screenX, screenY = pg.display.get_window_size()
-
     loc = spawn_locations[scene]
 
     cx = int(loc[0] / 160 * screenX) + screenX / 320

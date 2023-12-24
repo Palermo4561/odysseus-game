@@ -1,4 +1,3 @@
-
 scenes = {
     1 : "Ismarus",
     2 : "Land of the Lotus-Eaters",
@@ -47,7 +46,6 @@ spawn_locations = {
     13 : (44, 26)
 }
 
-# make this accurate 
 crew_count = (684, 612, 612, 536, 536, 46, 45, 45, 45, 39, 1, 1, 1)
 
 outcome_text_colors = {
@@ -55,5 +53,4 @@ outcome_text_colors = {
     2 : ('#3e3f3f', '#3e3f3f', '#0f253d', '#0f253d'),
     3 : ('#ffffff', '#ffffff', '#ffffff', '#ffffff'),
     4 : ('#000000', '#000000', '#000000', '#000000')
-
 }

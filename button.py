@@ -1,7 +1,7 @@
 import pygame as pg
 from functions import *
 import csv
-from dictionaries import outcome_text_colors
+
 
 class Button():
 
@@ -26,8 +26,8 @@ Parameters:
         
         self.outcome_image = self.__get_outcome_image()
         self.outcome_text = self.__get_outcome_text()
-        #self.outcome_text_color = outcome_text_colors[scene][pos-1]
         self.outcome_text_color = 'black'
+
 
 
     def __get_image(self) -> pg.Surface:
@@ -39,6 +39,7 @@ Return:
         return pixel_scale(pg.image.load(f"Assets/General/Button{self.pos}.png"))
 
 
+
     def __get_rect(self) -> pg.Rect:
         """Calculates the rectangle for the button based off the screen size
 
@@ -46,6 +47,7 @@ Return:
     pg.Rect: rectangle object for the Button"""
 
         return pg.Rect(5 * self.screenX / 6, self.topleft[1], self.screenX / 6, self.screenY / 5)
+
 
 
     def __get_topleft(self) -> tuple:
@@ -57,6 +59,7 @@ Return:
         return (5 * self.screenX / 6, self.pos * self.screenY / 5)
 
 
+
     def __get_outcome_image(self) -> pg.Surface:
         """Renders the button's outcome image
         
@@ -64,6 +67,7 @@ Return:
     pg.Surface: the surface rendered for the button's outcome image"""
         
         return pixel_scale(pg.image.load(f"Assets/Scene{self.scene}/Choice{self.pos}.png"), fullscreen=True)
+
 
 
     def __get_outcome_text(self) -> str:
@@ -75,16 +79,6 @@ Return:
         with open("Assets/General/outcomes.csv") as file:
             return tuple(csv.reader(file))[self.scene-1][self.pos-1]
         
-    
-    def __get_outcome_text_color(self) -> str:
-        """Determines if the text color should be black or white based on the image
-        
-Return: 
-    str: the string for the pygame color of the text"""
-        
-        if all(self.outcome_image.get_at((0, 0))) <= 50:
-            return 'white'
-        return 'black'
 
 
     def __repr__(self) -> str:
@@ -96,6 +90,7 @@ Return:
         return f"Rect: {self.collision_rect}\nText: {self.label}"
     
 
+
     def mouse_collides(self) -> int:
         """Checks to see if the mouse is colliding with the button 
         
@@ -106,6 +101,7 @@ Returns the position if it is, otherwise returns 0"""
         return 0
 
 
+
     def draw(self) -> None:
         """Draws the button"""
 
@@ -113,9 +109,9 @@ Returns the position if it is, otherwise returns 0"""
         multiline_text(self.label, self.win.get_size()[0]//30, self.win.get_size()[0]//6, center=self.collision_rect.center)
 
 
+
     def play_outcome(self) -> None:
         """Blits the outcome image and text of the button"""
         
         self.win.blit(self.outcome_image, (0, 0))
         multiline_text(self.outcome_text, self.screenX//16, color=self.outcome_text_color, center=(self.screenX//2, self.screenY//8))
-        #multiline_text(self.outcome_text, self.screenX//16)

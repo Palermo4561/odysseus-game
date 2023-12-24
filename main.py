@@ -1,14 +1,13 @@
 """
 Created by Grayson Palermo 
-12/7/2023
+12/23/2023
 Literature Humanities 
 Odessey Game 
 
 TODO:
 
-troubleshoot and play test 
-add docstrings 
-format code better
+fix multiline_text()
+combine calculate_waypoint_coords() and calculate_boat_coords() into one function   
 
 """
 
@@ -20,16 +19,12 @@ def main() -> None:
     """Main function of the program"""
 
     pg.init()
-
-    running = True
-
     pg.display.set_mode(flags=pg.FULLSCREEN)
-    
+    running = True
 
     while running:
 
-        
-        scene = 1
+        scene = 9
 
         run.opening()
         run.tutorial()
@@ -53,8 +48,8 @@ if __name__ == "__main__":
 Credits: 
 
 Font: https://www.1001freefonts.com/greek-freak.font
-Trumpet: https://pixabay.com/sound-effects/success-fanfare-trumpets-6185/"
-Click: https://pixabay.com/sound-effects/hitting-wood-6791/ 
+Trumpet sound: https://pixabay.com/sound-effects/success-fanfare-trumpets-6185/"
+Click sound: https://pixabay.com/sound-effects/hitting-wood-6791/ 
 
 Opening Music: 
 Viking Intro (Loop) by Alexander Nakarada (CreatorChords) | https://creatorchords.com
@@ -68,5 +63,6 @@ Music promoted by https://www.free-stock-music.com
 Creative Commons / Attribution 4.0 International (CC BY 4.0)
 https://creativecommons.org/licenses/by/4.0/
 
+All pixel artwork was created by me 
 
 """
